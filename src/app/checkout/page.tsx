@@ -21,6 +21,8 @@ export default function CheckoutPage() {
   const [discountCode, setDiscountCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [discountError, setDiscountError] = useState('');
+  const [orderError, setOrderError] = useState('');
+  const [placingOrder, setPlacingOrder] = useState(false);
   const finalTotal = grandTotal - discountAmount;
 
   const applyDiscount = async () => {
@@ -31,11 +33,19 @@ export default function CheckoutPage() {
     setDiscountAmount(Number(data.amount));
   };
 
-  const handleWhatsAppOrder = () => {
-    const message = encodeURIComponent(
-      `Hola, Café del Roble.\n\nQuiero realizar este pedido:\n${items.map((i) => `${i.name} ${i.variantName || ''} x${i.quantity}`).join('\n')}\n\nTotal: ${formatPrice(finalTotal)}`
-    );
-    window.open(`https://wa.me/?text=${message}`, '_blank');
+  const placeOrder = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setPlacingOrder(true);
+    setOrderError('');
+    const form = new FormData(event.currentTarget);
+    try {
+      const response = await fetch('/api/orders', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: form.get('name'), email: form.get('email'), phone: form.get('phone'), address: form.get('address'), city: form.get('city'), department: form.get('department'), paymentMethod: paymentMethod === 'card' ? 'TARJETA' : paymentMethod === 'pse' ? 'PSE' : 'WHATSAPP', discountCode, items }) });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'No se pudo crear el pedido');
+      window.location.href = `/cuenta/pedidos/${data.order.id}`;
+    } catch (error) {
+      setOrderError(error instanceof Error ? error.message : 'No se pudo crear el pedido');
+    } finally { setPlacingOrder(false); }
   };
 
   if (items.length === 0) {
@@ -61,17 +71,17 @@ export default function CheckoutPage() {
 
         <h1 className="font-serif text-4xl font-bold text-coffee-900">Finalizar compra</h1>
 
-        <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_400px]">
+        <form onSubmit={placeOrder} className="mt-8 grid gap-8 lg:grid-cols-[1fr_400px]">
           {/* Checkout Form */}
           <div className="space-y-8">
             {/* Personal Info */}
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="rounded-xl border border-cream-200 bg-white p-6">
               <h2 className="font-serif text-xl font-bold text-coffee-900">Información personal</h2>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <Input placeholder="Nombre *" required />
-                <Input placeholder="Apellido *" required />
-                <Input type="email" placeholder="Correo electrónico *" required className="sm:col-span-2" />
-                <Input type="tel" placeholder="Teléfono *" required />
+                <Input name="name" placeholder="Nombre *" required />
+                <Input name="lastName" placeholder="Apellido *" required />
+                <Input name="email" type="email" placeholder="Correo electrónico *" required className="sm:col-span-2" />
+                <Input name="phone" type="tel" placeholder="Teléfono *" required />
                 <Input placeholder="Número de documento" />
               </div>
             </motion.div>
@@ -80,10 +90,10 @@ export default function CheckoutPage() {
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="rounded-xl border border-cream-200 bg-white p-6">
               <h2 className="font-serif text-xl font-bold text-coffee-900">Dirección de envío</h2>
               <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                <Input placeholder="Dirección completa *" required className="sm:col-span-2" />
+                <Input name="address" placeholder="Dirección completa *" required className="sm:col-span-2" />
                 <Input placeholder="Barrio / Urbanización" />
-                <Input placeholder="Ciudad *" required />
-                <select className="rounded-lg border border-cream-300 bg-white px-3 py-2 text-sm text-coffee-900 sm:col-span-2">
+                <Input name="city" placeholder="Ciudad *" required />
+                <select name="department" className="rounded-lg border border-cream-300 bg-white px-3 py-2 text-sm text-coffee-900 sm:col-span-2" required>
                   <option value="">Seleccionar departamento</option>
                   {COLOMBIAN_DEPARTMENTS.map((dept) => (
                     <option key={dept} value={dept}>{dept}</option>
@@ -125,17 +135,18 @@ export default function CheckoutPage() {
             </div>
 
             {paymentMethod === 'whatsapp' ? (
-              <Button size="xl" className="w-full bg-nature-600 hover:bg-nature-700" onClick={handleWhatsAppOrder}>
+              <Button type="submit" size="xl" className="w-full bg-nature-600 hover:bg-nature-700">
                 <MessageCircle className="mr-2 h-5 w-5" />
                 Comprar por WhatsApp
               </Button>
             ) : (
-              <Button size="xl" className="w-full">
+              <Button type="submit" size="xl" className="w-full" disabled={placingOrder}>
                 <Lock className="mr-2 h-5 w-5" />
-                Pagar {formatPrice(finalTotal)}
+                {placingOrder ? 'Creando pedido...' : `Pagar ${formatPrice(finalTotal)}`}
               </Button>
             )}
           </div>
+          {orderError && <p className="text-sm text-red-600">{orderError}</p>}
 
           {/* Order Summary */}
           <div className="lg:sticky lg:top-24 h-fit">
@@ -177,7 +188,7 @@ export default function CheckoutPage() {
               </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </section>
   );

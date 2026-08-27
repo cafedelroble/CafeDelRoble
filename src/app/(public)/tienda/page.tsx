@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -10,15 +11,9 @@ import { ShoppingBag, Eye, Star, Filter, Search } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 import { useCartStore } from '@/stores/cart-store';
 
-const categories = [
-  { id: 'all', name: 'Todos', count: 8 },
-  { id: 'cafe-especial', name: 'Café Especial', count: 3 },
-  { id: 'cafe-tradicional', name: 'Café Tradicional', count: 2 },
-  { id: 'cafe-organico', name: 'Café Orgánico', count: 1 },
-  { id: 'cafe-de-origen', name: 'Café de Origen', count: 2 },
-];
+type Product = { id: string; name: string; slug: string; shortDescription: string | null; price: number; image: string | null; category: { name: string; slug: string }; type: string; roastLevel: string; averageRating: number | null; isFeatured: boolean; stock: number };
 
-const products = [
+/*
   { id: '1', name: 'Café Especial del Roble', slug: 'cafe-especial-del-roble', shortDescription: 'Chocolate, caramelo y frutos rojos.', price: 35000, category: 'cafe-especial', type: 'Grano', roastLevel: 'Media', rating: 4.9, isFeatured: true },
   { id: '2', name: 'Café Tradicional del Valle', slug: 'cafe-tradicional-del-valle', shortDescription: 'Sabor robusto y equilibrado.', price: 25000, category: 'cafe-tradicional', type: 'Molido', roastLevel: 'Media', rating: 4.5 },
   { id: '3', name: 'Café Orgánico de Nariño', slug: 'cafe-organico-de-narino', shortDescription: 'Notas cítricas y florales.', price: 45000, category: 'cafe-organico', type: 'Grano', roastLevel: 'Clara', rating: 4.8, isFeatured: true },
@@ -27,7 +22,7 @@ const products = [
   { id: '6', name: 'Café Reserve Especial', slug: 'cafe-reserve-especial', shortDescription: 'Edición limitada de Risaralda.', price: 55000, category: 'cafe-especial', type: 'Grano', roastLevel: 'Clara', rating: 5.0 },
   { id: '7', name: 'Café Tueste Artesanal', slug: 'cafe-tueste-artesanal', shortDescription: 'Tueste oscuro intenso y aromático.', price: 28000, category: 'cafe-tradicional', type: 'Molido', roastLevel: 'Oscura', rating: 4.4 },
   { id: '8', name: 'Pack Degustación Premium', slug: 'pack-degustacion-premium', shortDescription: 'Descubre los mejores orígenes colombianos.', price: 75000, category: 'cafe-de-origen', type: 'Grano', roastLevel: 'Media', rating: 4.9 },
-];
+]; */
 
 const sortOptions = [
   { value: 'relevance', label: 'Relevancia' },
@@ -37,6 +32,10 @@ const sortOptions = [
 ];
 
 export default function TiendaPage() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => { fetch('/api/products', { cache: 'no-store' }).then((response) => response.json()).then((data) => setProducts(data.products || [])).finally(() => setLoading(false)); }, []);
+  const categories = [{ id: 'all', name: 'Todos', count: products.length }, ...Array.from(new Map(products.map((product) => [product.category.slug, { id: product.category.slug, name: product.category.name, count: products.filter((item) => item.category.slug === product.category.slug).length }])).values())];
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('relevance');
   const [searchQuery, setSearchQuery] = useState('');
@@ -44,12 +43,12 @@ export default function TiendaPage() {
   const addItem = useCartStore((s) => s.addItem);
 
   const filteredProducts = products
-    .filter((p) => selectedCategory === 'all' || p.category === selectedCategory)
+    .filter((p) => selectedCategory === 'all' || p.category.slug === selectedCategory)
     .filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
       if (sortBy === 'price-asc') return a.price - b.price;
       if (sortBy === 'price-desc') return b.price - a.price;
-      if (sortBy === 'rating') return b.rating - a.rating;
+      if (sortBy === 'rating') return Number(b.averageRating || 0) - Number(a.averageRating || 0);
       return 0;
     });
 
@@ -120,7 +119,7 @@ export default function TiendaPage() {
 
             {/* Product Grid */}
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {filteredProducts.map((product, index) => (
+              {loading ? <p className="col-span-full text-center text-secondary-600">Cargando productos...</p> : filteredProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
                   initial={{ opacity: 0, y: 20 }}
@@ -129,15 +128,13 @@ export default function TiendaPage() {
                   className="group rounded-2xl border border-cream-200 bg-white shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1"
                 >
                   <div className="relative aspect-square overflow-hidden rounded-t-2xl bg-gradient-to-br from-coffee-200 to-cream-200">
-                    <div className="flex h-full items-center justify-center">
-                      <span className="font-serif text-6xl text-coffee-400/40">☕</span>
-                    </div>
+                    {product.image ? <Image src={product.image} alt={product.name} fill className="object-cover" /> : <div className="flex h-full items-center justify-center"><span className="font-serif text-6xl text-coffee-400/40">☕</span></div>}
                     {product.isFeatured && (
                       <Badge className="absolute left-3 top-3 bg-primary-700">Destacado</Badge>
                     )}
                     <div className="absolute right-3 top-3 flex items-center gap-1 rounded-full bg-white/90 px-2 py-1 text-xs font-medium">
                       <Star className="h-3 w-3 fill-cream-500 text-cream-500" />
-                      {product.rating}
+                      {Number(product.averageRating || 0).toFixed(1)}
                     </div>
                   </div>
                   <div className="p-5">
@@ -164,9 +161,9 @@ export default function TiendaPage() {
                             productId: product.id,
                             name: product.name,
                             price: product.price,
-                            image: '',
+                            image: product.image || '',
                             quantity: 1,
-                            stock: 50,
+                            stock: product.stock,
                           })
                         }
                       >
