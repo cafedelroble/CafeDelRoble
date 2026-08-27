@@ -6,7 +6,7 @@ import { FeaturedProductsClient } from './featured-products-client';
 async function getFeaturedProducts() {
   try {
     const products = await prisma.product.findMany({
-      where: { isActive: true, deletedAt: null, isFeatured: true },
+      where: { isActive: true, deletedAt: null },
       include: {
         category: { select: { name: true, slug: true } },
         images: { where: { isPrimary: true }, take: 1 },
