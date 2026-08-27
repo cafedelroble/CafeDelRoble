@@ -31,6 +31,7 @@ export default function AdminPedidosPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   useEffect(() => { fetch('/api/admin/orders', { cache: 'no-store' }).then((response) => response.json()).then((data) => setOrders(data.orders || [])); }, []);
   const filtered = orders.filter((order) => `${order.orderNumber} ${order.customer} ${order.email}`.toLowerCase().includes(search.toLowerCase()));
+  const updateStatus = async (order: Order, status: string) => { await fetch('/api/admin/orders', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: order.id, status }) }); setOrders((current) => current.map((item) => item.id === order.id ? { ...item, status } : item)); };
 
   return (
     <div className="space-y-6">
@@ -76,7 +77,7 @@ export default function AdminPedidosPage() {
                 <td className="p-4 text-sm font-medium text-coffee-900">{formatPrice(order.total)}</td>
                 <td className="p-4 text-sm text-secondary-600">{order.payment}</td>
                 <td className="p-4">
-                  <Badge className={statusColors[order.status]}>{statusLabels[order.status]}</Badge>
+                  <select value={order.status} onChange={(event) => void updateStatus(order, event.target.value)} className="rounded-md border border-cream-300 px-2 py-1 text-xs"><option value="PENDIENTE_PAGO">Pendiente de pago</option><option value="PAGO_RECIBIDO">Pago recibido</option><option value="PREPARANDO">Preparando</option><option value="LISTO_PARA_DESPACHO">Listo para despacho</option><option value="ENVIADO">Enviado</option><option value="ENTREGADO">Entregado</option><option value="CANCELADO">Cancelado</option></select>
                 </td>
                 <td className="p-4">
                   <Button variant="ghost" size="icon" className="h-8 w-8"><Eye className="h-4 w-4" /></Button>

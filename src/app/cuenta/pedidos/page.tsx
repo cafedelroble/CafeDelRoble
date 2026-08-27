@@ -5,12 +5,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowRight, Package } from 'lucide-react';
 import { formatPrice, formatDateShort } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 
-const orders = [
-  { id: 'CDR-000123', date: '2026-08-20', total: 70000, status: 'Enviado', items: [{ name: 'Café Especial del Roble', qty: 2 }] },
-  { id: 'CDR-000118', date: '2026-08-15', total: 45000, status: 'Entregado', items: [{ name: 'Café Orgánico de Nariño', qty: 1 }] },
-  { id: 'CDR-000110', date: '2026-08-01', total: 43000, status: 'Entregado', items: [{ name: 'Blend Maestro del Roble', qty: 1 }, { name: 'Café Tradicional del Valle', qty: 1 }] },
-];
+type Order = { id: string; orderNumber: string; createdAt: string; total: number; status: string; items: { productName: string; quantity: number }[] };
 
 const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'secondary'> = {
   Enviado: 'default',
@@ -19,6 +16,8 @@ const statusVariant: Record<string, 'default' | 'success' | 'warning' | 'seconda
 };
 
 export default function PedidosPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  useEffect(() => { fetch('/api/account/orders', { cache: 'no-store' }).then((response) => response.json()).then((data) => setOrders((data.orders || []).map((order: Order) => ({ ...order, total: Number(order.total) })))); }, []);
   return (
     <div className="space-y-8">
       <div>
@@ -35,12 +34,12 @@ export default function PedidosPage() {
                   <Package className="h-6 w-6 text-primary-700" />
                 </div>
                 <div>
-                  <p className="font-medium text-coffee-900">{order.id}</p>
-                  <p className="text-sm text-secondary-500">{formatDateShort(order.date)} · {order.items.length} producto(s)</p>
+                  <p className="font-medium text-coffee-900">{order.orderNumber}</p>
+                  <p className="text-sm text-secondary-500">{formatDateShort(order.createdAt)} · {order.items.length} producto(s)</p>
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <Badge variant={statusVariant[order.status] || 'secondary'}>{order.status}</Badge>
+                <Badge variant={statusVariant[order.status] || 'secondary'}>{order.status.replaceAll('_', ' ')}</Badge>
                 <span className="font-serif font-bold text-coffee-900">{formatPrice(order.total)}</span>
                 <Button size="sm" variant="outline" asChild>
                   <Link href={`/cuenta/pedidos/${order.id}`}>
