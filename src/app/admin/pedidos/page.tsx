@@ -2,29 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Search, Eye, Filter } from 'lucide-react';
 import { formatPrice } from '@/lib/utils';
 
 type Order = { id: string; orderNumber: string; customer: string; email: string; date: string; total: number; payment: string; status: string };
-
-const statusLabels: Record<string, string> = {
-  PENDIENTE_PAGO: 'Pendiente de pago',
-  PAGO_RECIBIDO: 'Pago recibido',
-  PREPARANDO: 'Preparando',
-  ENVIADO: 'Enviado',
-  ENTREGADO: 'Entregado',
-  CANCELADO: 'Cancelado',
-};
-
-const statusColors: Record<string, string> = {
-  PENDIENTE_PAGO: 'bg-cream-100 text-cream-700',
-  PAGO_RECIBIDO: 'bg-primary-100 text-primary-700',
-  PREPARANDO: 'bg-nature-100 text-nature-700',
-  ENVIADO: 'bg-blue-50 text-blue-600',
-  ENTREGADO: 'bg-green-50 text-green-600',
-  CANCELADO: 'bg-red-50 text-red-600',
-};
 
 export default function AdminPedidosPage() {
   const [search, setSearch] = useState('');
