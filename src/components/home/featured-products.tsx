@@ -1,8 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ShoppingBag, Eye, Star } from 'lucide-react';
-import { formatPrice } from '@/lib/utils';
 import { prisma } from '@/lib/prisma';
 import { FeaturedProductsClient } from './featured-products-client';
 
