@@ -103,10 +103,12 @@ async function main() {
       create: { productId: product.id, name: "500g", sku: `${data.sku}-500`, price: data.price, stock: 80, weight: 500 },
     });
 
+    const existingImage = await prisma.productImage.findUnique({ where: { id: `seed-image-${data.slug}` }, select: { url: true, cloudinaryPublicId: true } });
+    const localImageUrl = `${PRODUCT_IMAGE_DIR}/${imageFile}`;
     await prisma.productImage.upsert({
       where: { id: `seed-image-${data.slug}` },
       update: {
-        url: `${PRODUCT_IMAGE_DIR}/${imageFile}`,
+        url: existingImage?.cloudinaryPublicId ? existingImage.url : localImageUrl,
         altText: data.name,
         sortOrder: 0,
         isPrimary: true,
@@ -114,7 +116,7 @@ async function main() {
       create: {
         id: `seed-image-${data.slug}`,
         productId: product.id,
-        url: `${PRODUCT_IMAGE_DIR}/${imageFile}`,
+        url: localImageUrl,
         altText: data.name,
         sortOrder: 0,
         isPrimary: true,
