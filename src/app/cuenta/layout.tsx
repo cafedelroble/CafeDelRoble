@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { User, Package, MapPin, Heart, Shield, LogOut, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useSession, signOut } from 'next-auth/react';
+import { toast } from 'sonner';
 
 const sidebarLinks = [
   { href: '/cuenta', label: 'Dashboard', icon: LayoutDashboard },
@@ -58,7 +59,13 @@ export default function CuentaLayout({ children }: { children: React.ReactNode }
                   );
                 })}
                 <div className="border-t border-cream-200 pt-4 mt-4">
-                  <button onClick={() => signOut({ callbackUrl: '/login' })} className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-secondary-600 hover:bg-cream-100 hover:text-destructive transition-colors">
+                  <button
+                    onClick={() => {
+                      toast.success('Sesión cerrada correctamente');
+                      void signOut({ callbackUrl: '/login' });
+                    }}
+                    className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-secondary-600 hover:bg-cream-100 hover:text-destructive transition-colors"
+                  >
                     <LogOut className="h-4 w-4" />
                     Cerrar sesión
                   </button>

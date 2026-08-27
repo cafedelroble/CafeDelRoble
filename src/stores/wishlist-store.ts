@@ -21,6 +21,8 @@ interface WishlistStore {
   getItemCount: () => number;
 }
 
+import { toast } from 'sonner';
+
 export const useWishlistStore = create<WishlistStore>()(
   persist(
     (set, get) => ({
@@ -29,10 +31,15 @@ export const useWishlistStore = create<WishlistStore>()(
       addItem: (item) => {
         if (get().isInWishlist(item.productId)) return;
         set({ items: [...get().items, item] });
+        toast.success(`"${item.name}" guardado en favoritos ❤️`);
       },
 
       removeItem: (productId) => {
+        const itemToRemove = get().items.find((i) => i.productId === productId);
         set({ items: get().items.filter((i) => i.productId !== productId) });
+        if (itemToRemove) {
+          toast.info(`"${itemToRemove.name}" eliminado de favoritos`);
+        }
       },
 
       toggleItem: (item) => {

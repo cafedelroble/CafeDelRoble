@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input';
 import { productSchema } from '@/lib/validations/auth';
 import { ProductImageField } from '@/components/admin/product-image-field';
 
+import { toast } from 'sonner';
+
 type Category = { id: string; name: string };
 
 const initialForm = {
@@ -27,8 +29,15 @@ export default function NewProductPage() {
     fetch('/api/admin/categories').then(async (response) => {
       const data = await response.json();
       if (response.ok) setCategories(data.categories);
-      else setError(data.error || 'No se pudieron cargar las categorías');
-    }).catch(() => setError('No se pudieron cargar las categorías'));
+      else {
+        const msg = data.error || 'No se pudieron cargar las categorías';
+        setError(msg);
+        toast.error(msg);
+      }
+    }).catch(() => {
+      setError('No se pudieron cargar las categorías');
+      toast.error('No se pudieron cargar las categorías');
+    });
   }, []);
 
   const update = (key: keyof typeof initialForm, value: string | boolean) => setForm((current) => ({ ...current, [key]: value }));
@@ -45,7 +54,9 @@ export default function NewProductPage() {
     };
     const parsed = productSchema.safeParse(payload);
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message || 'Revisa los datos del producto');
+      const msg = parsed.error.issues[0]?.message || 'Revisa los datos del producto';
+      setError(msg);
+      toast.error(msg);
       setSaving(false);
       return;
     }
@@ -53,10 +64,13 @@ export default function NewProductPage() {
       const response = await fetch('/api/admin/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...parsed.data, imageUrl: form.imageUrl }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'No se pudo crear el producto');
+      toast.success(`Producto "${form.name}" creado exitosamente`);
       router.push('/admin/productos');
       router.refresh();
     } catch (saveError) {
-      setError(saveError instanceof Error ? saveError.message : 'No se pudo crear el producto');
+      const msg = saveError instanceof Error ? saveError.message : 'No se pudo crear el producto';
+      setError(msg);
+      toast.error(msg);
       setSaving(false);
     }
   };

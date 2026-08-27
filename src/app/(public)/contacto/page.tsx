@@ -13,7 +13,17 @@ const contactInfo = [
   { icon: Clock, title: 'Horario', details: ['Lun - Vie: 8:00 AM - 6:00 PM', 'Sáb: 9:00 AM - 2:00 PM'] },
 ];
 
+import { toast } from 'sonner';
+
 export default function ContactoPage() {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success('¡Mensaje enviado con éxito!', {
+      description: 'Nos pondremos en contacto contigo lo más pronto posible.',
+    });
+    (e.target as HTMLFormElement).reset();
+  };
+
   return (
     <>
       <section className="bg-gradient-to-br from-coffee-950 to-primary-950 py-24 sm:py-32">
@@ -36,13 +46,13 @@ export default function ContactoPage() {
               <p className="mt-4 text-secondary-600">
                 Completa el formulario y te responderemos lo antes posible.
               </p>
-              <form className="mt-8 space-y-5">
+              <form onSubmit={handleSubmit} className="mt-8 space-y-5">
                 <div className="grid gap-5 sm:grid-cols-2">
-                  <Input placeholder="Nombre" />
-                  <Input placeholder="Correo electrónico" type="email" />
+                  <Input placeholder="Nombre" required />
+                  <Input placeholder="Correo electrónico" type="email" required />
                 </div>
-                <Input placeholder="Asunto" />
-                <Textarea placeholder="Tu mensaje" rows={5} />
+                <Input placeholder="Asunto" required />
+                <Textarea placeholder="Tu mensaje" rows={5} required />
                 <Button type="submit" size="lg" className="w-full sm:w-auto">
                   Enviar mensaje
                 </Button>

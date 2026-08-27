@@ -5,7 +5,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Coffee } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 export function Newsletter() {
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    toast.success('¡Gracias por suscribirte!', {
+      description: 'Te enviaremos las mejores noticias y promociones exclusivas.',
+    });
+    (e.target as HTMLFormElement).reset();
+  };
+
   return (
     <section className="relative overflow-hidden bg-coffee-950 py-20">
       <div className="absolute inset-0 opacity-5">
@@ -29,11 +39,12 @@ export function Newsletter() {
             Recibe ofertas exclusivas, nuevos productos y la historia detrás de cada grano.
           </p>
           
-          <form className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <form onSubmit={handleSubscribe} className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Input
               type="email"
               placeholder="Tu correo electrónico"
               className="flex-1 border-cream-700 bg-coffee-900 text-white placeholder:text-cream-500"
+              required
             />
             <Button type="submit" className="bg-primary-600 text-white hover:bg-primary-700">
               Suscribirme

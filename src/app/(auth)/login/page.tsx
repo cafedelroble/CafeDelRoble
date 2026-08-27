@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Mail, Lock, Coffee, Eye, EyeOff } from 'lucide-react';
 
+import { toast } from 'sonner';
+
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,17 +33,22 @@ function LoginForm() {
       });
 
       if (result?.error) {
-        setError('Correo o contraseña incorrectos');
+        const msg = 'Correo o contraseña incorrectos';
+        setError(msg);
+        toast.error(msg);
         return;
       }
 
+      toast.success('¡Sesión iniciada con éxito!');
       const session = await getSession();
       const callbackUrl = searchParams.get('callbackUrl');
       const destination = callbackUrl || (session?.user.role === 'ADMIN' || session?.user.role === 'SUPER_ADMIN' ? '/admin' : '/cuenta');
       router.push(destination);
       router.refresh();
     } catch {
-      setError('No fue posible iniciar sesión. Intenta nuevamente.');
+      const msg = 'No fue posible iniciar sesión. Intenta nuevamente.';
+      setError(msg);
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }

@@ -5,8 +5,9 @@ import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Package, Tag, ShoppingCart, Users, Image, Settings, BarChart3, MessageCircle, CreditCard, Truck, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Coffee } from 'lucide-react';
-import { useSession } from 'next-auth/react';
+import { Coffee, LogOut } from 'lucide-react';
+import { useSession, signOut } from 'next-auth/react';
+import { toast } from 'sonner';
 
 const adminLinks = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -85,6 +86,16 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="ml-auto flex items-center gap-3">
             <Link href="/" className="text-sm text-secondary-600 hover:text-primary-700">Ver tienda</Link>
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-100 text-primary-700 text-sm font-bold">{initials}</div>
+            <button
+              onClick={() => {
+                toast.success('Sesión de administrador cerrada');
+                void signOut({ callbackUrl: '/login' });
+              }}
+              title="Cerrar sesión"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-secondary-500 hover:bg-cream-100 hover:text-destructive transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+            </button>
           </div>
         </header>
         <main className="p-4 sm:p-6 lg:p-8">{children}</main>

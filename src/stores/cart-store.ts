@@ -26,6 +26,8 @@ interface CartStore {
   getItem: (productId: string, variantId?: string) => CartItem | undefined;
 }
 
+import { toast } from 'sonner';
+
 export const useCartStore = create<CartStore>()(
   persist(
     (set, get) => ({
@@ -51,14 +53,23 @@ export const useCartStore = create<CartStore>()(
           };
           set({ items: [...get().items, newItem] });
         }
+        toast.success(`"${item.name}" agregado al carrito`, {
+          description: `Cantidad: ${item.quantity}`,
+        });
       },
 
       removeItem: (productId, variantId) => {
+        const itemToRemove = get().items.find(
+          (i) => i.productId === productId && i.variantId === (variantId || undefined)
+        );
         set({
           items: get().items.filter(
             (i) => !(i.productId === productId && i.variantId === (variantId || undefined))
           ),
         });
+        if (itemToRemove) {
+          toast.info(`"${itemToRemove.name}" eliminado del carrito`);
+        }
       },
 
       updateQuantity: (productId, quantity, variantId) => {

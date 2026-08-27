@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ProductImageField } from '@/components/admin/product-image-field';
 
+import { toast } from 'sonner';
+
 type Product = { name: string; slug: string; sku: string; price: number; shortDescription: string | null; isActive: boolean; isFeatured: boolean; images: { url: string; isPrimary: boolean }[] };
 
 export default function EditProductPage() {
@@ -19,20 +21,43 @@ export default function EditProductPage() {
   useEffect(() => {
     fetch(`/api/admin/products/${params.id}`, { cache: 'no-store' }).then(async (response) => {
       const data = await response.json();
-        if (response.ok) setProduct(data.product);
-      else setError(data.error || 'No se pudo cargar el producto');
-    }).catch(() => setError('No se pudo cargar el producto'));
+      if (response.ok) setProduct(data.product);
+      else {
+        const msg = data.error || 'No se pudo cargar el producto';
+        setError(msg);
+        toast.error(msg);
+      }
+    }).catch(() => {
+      setError('No se pudo cargar el producto');
+      toast.error('No se pudo cargar el producto');
+    });
   }, [params.id]);
 
   const save = async (event: React.FormEvent) => {
     event.preventDefault();
     if (!product) return;
     setSaving(true);
-    const response = await fetch(`/api/admin/products/${params.id}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...product, imageUrl: product.images.find((image) => image.isPrimary)?.url || '' }) });
-    const data = await response.json();
-    if (!response.ok) setError(data.error || 'No se pudo actualizar el producto');
-    else router.push('/admin/productos');
-    setSaving(false);
+    try {
+      const response = await fetch(`/api/admin/products/${params.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...product, imageUrl: product.images.find((image) => image.isPrimary)?.url || '' }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        const msg = data.error || 'No se pudo actualizar el producto';
+        setError(msg);
+        toast.error(msg);
+      } else {
+        toast.success(`Producto "${product.name}" actualizado correctamente`);
+        router.push('/admin/productos');
+        router.refresh();
+      }
+    } catch {
+      toast.error('Error al intentar guardar los cambios');
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (error) return <p className="text-sm text-red-600">{error}</p>;
