@@ -132,24 +132,17 @@ function LoginForm() {
           </Button>
         </form>
 
-        <div className="mt-6">
-          <div className="relative">
-            <Separator />
-            <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-cream-50 px-3 text-xs text-secondary-500">
-              o continua con
-            </span>
-          </div>
-          <div className="mt-6 grid grid-cols-2 gap-4">
-            <Button variant="outline" size="lg">
-              Google
-            </Button>
-            <Button variant="outline" size="lg" asChild>
-              <Link href="/checkout?guest=1">
-                Comprar como invitado
-              </Link>
+<div className="mt-6">
+            <div className="relative">
+              <Separator />
+              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-cream-50 px-3 text-xs text-secondary-500">
+                o continua con
+              </span>
+            </div>
+            <Button variant="outline" size="lg" className="mt-6 w-full" asChild>
+              <Link href="/checkout?guest=1">Comprar como invitado</Link>
             </Button>
           </div>
-        </div>
       </motion.div>
     </div>
   );

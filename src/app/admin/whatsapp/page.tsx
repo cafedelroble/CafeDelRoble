@@ -123,7 +123,7 @@ export default function AdminWhatsAppPage() {
           <h2 className="font-serif text-lg font-bold">Vista previa del chat</h2>
         </div>
         <div className="mt-4 max-w-sm rounded-lg rounded-tl-none bg-coffee-800 p-4">
-          <p className="text-sm text-coffee-100">{settings.messageTemplate || 'Hola Café del Roble 👋, quiero hacer un pedido.'}</p>
+          <p className="text-sm text-coffee-100">{settings.messageTemplate || 'Hola Café del Roble, quiero hacer un pedido.'}</p>
           <p className="mt-2 text-xs text-coffee-400">
             {loaded ? (cleanNumber ? `Enviado a +${cleanNumber}` : 'Número aún no configurado') : 'Cargando...'}
           </p>

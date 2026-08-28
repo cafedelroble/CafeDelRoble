@@ -12,7 +12,7 @@ async function readSettings() {
   return {
     number: text('whatsapp_number') || process.env.WHATSAPP_NUMBER || '',
     messageTemplate:
-      text('whatsapp_message_template') || 'Hola Café del Roble 👋, quiero hacer un pedido. Mi carrito:\n',
+      text('whatsapp_message_template') || 'Hola Café del Roble, quiero hacer un pedido. Mi carrito:\n',
     autoMessage: auto === true || auto === 'true' || auto === '1',
   };
 }
