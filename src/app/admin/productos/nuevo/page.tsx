@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { productSchema } from '@/lib/validations/auth';
-import { ProductImageField } from '@/components/admin/product-image-field';
+import { ProductImagesField, type ProductImageInput } from '@/components/admin/product-images-field';
 
 import { toast } from 'sonner';
 
@@ -15,7 +15,7 @@ type Category = { id: string; name: string };
 const initialForm = {
   name: '', slug: '', description: '', shortDescription: '', categoryId: '', price: '', sku: '', weight: '',
   presentation: '', type: 'GRAIN', roastLevel: 'MEDIA', origin: '', tastingNotes: '', isActive: true, isFeatured: false,
-  imageUrl: '',
+  images: [] as ProductImageInput[],
 };
 
 export default function NewProductPage() {
@@ -40,7 +40,7 @@ export default function NewProductPage() {
     });
   }, []);
 
-  const update = (key: keyof typeof initialForm, value: string | boolean) => setForm((current) => ({ ...current, [key]: value }));
+  const update = (key: keyof typeof initialForm, value: string | boolean | ProductImageInput[]) => setForm((current) => ({ ...current, [key]: value }));
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -61,7 +61,7 @@ export default function NewProductPage() {
       return;
     }
     try {
-      const response = await fetch('/api/admin/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...parsed.data, imageUrl: form.imageUrl }) });
+      const response = await fetch('/api/admin/products', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...parsed.data, images: form.images }) });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'No se pudo crear el producto');
       toast.success(`Producto "${form.name}" creado exitosamente`);
@@ -92,7 +92,7 @@ export default function NewProductPage() {
       <label className="block space-y-1 text-sm font-medium">Descripción<textarea className="min-h-28 w-full rounded-md border border-cream-300 p-3" value={form.description} onChange={(e) => update('description', e.target.value)} /></label>
       <label className="block space-y-1 text-sm font-medium">Origen<Input value={form.origin} onChange={(e) => update('origin', e.target.value)} /></label>
       <label className="block space-y-1 text-sm font-medium">Notas de cata <span className="font-normal text-secondary-500">(separadas por coma)</span><Input value={form.tastingNotes} onChange={(e) => update('tastingNotes', e.target.value)} /></label>
-      <ProductImageField value={form.imageUrl} onChange={(value) => update('imageUrl', value)} disabled={saving} />
+      <ProductImagesField value={form.images} onChange={(images) => update('images', images)} disabled={saving} />
       {error && <p className="text-sm text-red-600">{error}</p>}
       <div className="flex gap-3"><Button type="submit" disabled={saving}>{saving ? 'Guardando...' : 'Crear producto'}</Button></div>
     </form>

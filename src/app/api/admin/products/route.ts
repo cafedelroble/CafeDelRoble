@@ -13,6 +13,36 @@ type ProductWithDetails = Prisma.ProductGetPayload<{
   };
 }>;
 
+type ProductImageInput = {
+  url?: unknown;
+  altText?: unknown;
+  isPrimary?: unknown;
+  sortOrder?: unknown;
+  cloudinaryPublicId?: unknown;
+};
+
+function parseProductImages(images: unknown, fallbackName: string) {
+  if (!Array.isArray(images)) return [];
+
+  const validImages = images
+    .map((image: ProductImageInput, index) => ({
+      url: typeof image.url === 'string' ? image.url.trim() : '',
+      altText: typeof image.altText === 'string' ? image.altText : fallbackName,
+      isPrimary: image.isPrimary === true,
+      sortOrder: typeof image.sortOrder === 'number' ? image.sortOrder : index,
+      cloudinaryPublicId: typeof image.cloudinaryPublicId === 'string' ? image.cloudinaryPublicId : null,
+    }))
+    .filter((image) => image.url.length > 0)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+
+  const primaryIndex = validImages.findIndex((image) => image.isPrimary);
+  return validImages.map((image, index) => ({
+    ...image,
+    sortOrder: index,
+    isPrimary: primaryIndex === -1 ? index === 0 : index === primaryIndex,
+  }));
+}
+
 function serializeProduct(product: ProductWithDetails) {
   return {
     ...product,
@@ -48,10 +78,15 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const data = productSchema.parse(body);
+    const images = parseProductImages(body.images, data.name);
     const product = await prisma.product.create({
       data: {
         ...data,
-        images: body.imageUrl ? { create: { url: body.imageUrl, altText: data.name, isPrimary: true } } : undefined,
+        images: images.length > 0
+          ? { create: images }
+          : body.imageUrl
+            ? { create: { url: body.imageUrl, altText: data.name, isPrimary: true } }
+            : undefined,
       },
       include: { category: { select: { id: true, name: true } }, images: true, variants: true, inventory: true },
     });
