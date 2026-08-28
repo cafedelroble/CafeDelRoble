@@ -2,9 +2,7 @@ import type { Metadata } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import { siteConfig } from '@/config/site';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
-import { WhatsAppButton } from '@/components/layout/whatsapp-button';
+import { StoreChrome } from '@/components/layout/store-chrome';
 import { AuthSessionProvider } from '@/components/auth/session-provider';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -66,10 +64,9 @@ export default function RootLayout({
     <html lang="es-CO" className={`${inter.variable} ${playfair.variable}`}>
       <body className="min-h-screen bg-background font-sans antialiased">
         <AuthSessionProvider>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
-          <WhatsAppButton />
+          <StoreChrome>
+            {children}
+          </StoreChrome>
           <Toaster />
         </AuthSessionProvider>
       </body>

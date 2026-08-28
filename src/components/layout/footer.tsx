@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import { Coffee, MapPin, Phone, Mail, Globe, Users, MessageCircle } from 'lucide-react';
 
