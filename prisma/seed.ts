@@ -126,6 +126,128 @@ async function main() {
     products.push(product);
   }
 
+  // Real products - Café del Roble cataloge fijo (referencias reproducibles Cloudinary)
+  const realProducts = [
+    {
+      name: "Café del Roble - Muestra (120g)",
+      slug: "cafe-del-roble-muestra-120g",
+      description: "Perfecto para probar nuestro café de origen. Finca La Miranda.",
+      shortDescription: "Presentación pequeña de 120g.",
+      price: 15000,
+      sku: "ROBLE-120",
+      weight: 120,
+      origin: "Finca La Miranda, Toro Valle",
+      tastingNotes: [],
+      isFeatured: false,
+      stock: 100,
+      mainImage: { id: "seed-image-cafe-del-roble-muestra-120g", url: "/images/products/roble-120g.jpg", altText: "Café del Roble - Muestra (120g)" },
+      additions: [
+        { id: "seed-image-cafe-del-roble-muestra-120g-additional-1", url: "https://res.cloudinary.com/saxpoorp/image/upload/cafe-del-roble/products/cafe-del-roble-muestra-120g/contextual.jpg", publicId: "cafe-del-roble/products/cafe-del-roble-muestra-120g/contextual", altText: "Café del Roble - Muestra (120g) en preparación contextual" },
+        { id: "seed-image-cafe-del-roble-muestra-120g-additional-2", url: "https://res.cloudinary.com/saxpoorp/image/upload/cafe-del-roble/products/cafe-del-roble-muestra-120g/detalle.jpg", publicId: "cafe-del-roble/products/cafe-del-roble-muestra-120g/detalle", altText: "Detalle de empaque y café molido Café del Roble - Muestra (120g)" },
+      ],
+    },
+    {
+      name: "Café del Roble - Tostión Media (250g)",
+      slug: "cafe-del-roble-tostion-media-250g",
+      description: "Café cultivado con dedicación. Finca La Miranda. 100% café colombiano. Presentación de 250g.",
+      shortDescription: "Tostión media, media libra.",
+      price: 22000,
+      sku: "ROBLE-250",
+      weight: 250,
+      origin: "Finca La Miranda, Toro Valle",
+      tastingNotes: [],
+      isFeatured: true,
+      stock: 100,
+      mainImage: { id: "seed-image-cafe-del-roble-tostion-media-250g", url: "/images/products/roble-250g.jpg", altText: "Café del Roble - Tostión Media (250g)" },
+      additions: [
+        { id: "seed-image-cafe-del-roble-tostion-media-250g-additional-1", url: "https://res.cloudinary.com/saxpoorp/image/upload/cafe-del-roble/products/cafe-del-roble-tostion-media-250g/contextual.jpg", publicId: "cafe-del-roble/products/cafe-del-roble-tostion-media-250g/contextual", altText: "Café del Roble - Tostión Media (250g) en cafetería" },
+        { id: "seed-image-cafe-del-roble-tostion-media-250g-additional-2", url: "https://res.cloudinary.com/saxpoorp/image/upload/cafe-del-roble/products/cafe-del-roble-tostion-media-250g/detalle.jpg", publicId: "cafe-del-roble/products/cafe-del-roble-tostion-media-250g/detalle", altText: "Detalle de empaque y granos Café del Roble - Tostión Media (250g)" },
+      ],
+    },
+    {
+      name: "Café del Roble - Tostión Media (500g)",
+      slug: "cafe-del-roble-tostion-media-500g",
+      description: "Café cultivado con dedicación de la semilla a tu taza. Finca La Miranda. 100% café colombiano. Presentación de 500g.",
+      shortDescription: "Tostión media, presentación de libra.",
+      price: 35000,
+      sku: "ROBLE-500",
+      weight: 500,
+      origin: "Finca La Miranda, Toro Valle",
+      tastingNotes: [],
+      isFeatured: true,
+      stock: 100,
+      mainImage: { id: "seed-image-cafe-del-roble-tostion-media-500g", url: "/images/products/roble-500g.jpg", altText: "Café del Roble - Tostión Media (500g)" },
+      additions: [
+        { id: "seed-image-cafe-del-roble-tostion-media-500g-additional-1", url: "https://res.cloudinary.com/saxpoorp/image/upload/cafe-del-roble/products/cafe-del-roble-tostion-media-500g/contextual.jpg", publicId: "cafe-del-roble/products/cafe-del-roble-tostion-media-500g/contextual", altText: "Café del Roble - Tostión Media (500g) en barra de café" },
+        { id: "seed-image-cafe-del-roble-tostion-media-500g-additional-2", url: "https://res.cloudinary.com/saxpoorp/image/upload/cafe-del-roble/products/cafe-del-roble-tostion-media-500g/detalle.jpg", publicId: "cafe-del-roble/products/cafe-del-roble-tostion-media-500g/detalle", altText: "Detalle de empaque y granos Café del Roble - Tostión Media (500g)" },
+      ],
+    },
+    {
+      name: "Café del Roble - Institucional (2500g)",
+      slug: "cafe-del-roble-institucional-2500g",
+      description: "Café de origen de altura. Ideal para negocios o consumo familiar. Finca La Miranda. Presentación de 2.500g.",
+      shortDescription: "Presentación grande de 2.5kg.",
+      price: 150000,
+      sku: "ROBLE-2500",
+      weight: 2500,
+      origin: "Finca La Miranda, Toro Valle",
+      tastingNotes: [],
+      isFeatured: true,
+      stock: 100,
+      mainImage: { id: "seed-image-cafe-del-roble-institucional-2500g", url: "/images/products/roble-2500g.jpg", altText: "Café del Roble - Institucional (2500g)" },
+      additions: [
+        { id: "seed-image-cafe-del-roble-institucional-2500g-additional-1", url: "https://res.cloudinary.com/saxpoorp/image/upload/cafe-del-roble/products/cafe-del-roble-institucional-2500g/contextual.jpg", publicId: "cafe-del-roble/products/cafe-del-roble-institucional-2500g/contextual", altText: "Café del Roble - Institucional (2500g) en finca cafetera" },
+        { id: "seed-image-cafe-del-roble-institucional-2500g-additional-2", url: "https://res.cloudinary.com/saxpoorp/image/upload/cafe-del-roble/products/cafe-del-roble-institucional-2500g/detalle.jpg", publicId: "cafe-del-roble/products/cafe-del-roble-institucional-2500g/detalle", altText: "Detalle de empaque Café del Roble - Institucional (2500g)" },
+      ],
+    },
+  ];
+
+  for (const data of realProducts) {
+    const product = await prisma.product.upsert({
+      where: { slug: data.slug },
+      update: {},
+      create: {
+        name: data.name,
+        slug: data.slug,
+        description: data.description,
+        shortDescription: data.shortDescription,
+        categoryId: catEspecial.id,
+        price: data.price,
+        sku: data.sku,
+        weight: data.weight,
+        origin: data.origin,
+        tastingNotes: data.tastingNotes,
+        isFeatured: data.isFeatured,
+        isActive: true,
+      },
+    });
+
+    const existingInventory = await prisma.inventory.findFirst({ where: { productId: product.id, variantId: null } });
+    if (existingInventory) {
+      await prisma.inventory.update({ where: { id: existingInventory.id }, data: { stock: data.stock } });
+    } else {
+      await prisma.inventory.create({ data: { productId: product.id, variantId: null, stock: data.stock } });
+    }
+
+    const existingMain = await prisma.productImage.findUnique({ where: { id: data.mainImage.id }, select: { url: true } });
+    await prisma.productImage.upsert({
+      where: { id: data.mainImage.id },
+      update: { productId: product.id, url: existingMain?.url ?? data.mainImage.url, altText: data.mainImage.altText, sortOrder: 0, isPrimary: true },
+      create: { id: data.mainImage.id, productId: product.id, url: data.mainImage.url, altText: data.mainImage.altText, sortOrder: 0, isPrimary: true },
+    });
+
+    await prisma.productImage.updateMany({ where: { productId: product.id, id: { not: data.mainImage.id } }, data: { isPrimary: false } });
+
+    for (const [index, image] of data.additions.entries()) {
+      const existing = await prisma.productImage.findUnique({ where: { id: image.id }, select: { url: true, cloudinaryPublicId: true } });
+      await prisma.productImage.upsert({
+        where: { id: image.id },
+        update: { productId: product.id, url: existing?.cloudinaryPublicId ? existing.url : image.url, altText: image.altText, sortOrder: index + 1, isPrimary: false, cloudinaryPublicId: existing?.cloudinaryPublicId ?? image.publicId },
+        create: { id: image.id, productId: product.id, url: image.url, altText: image.altText, sortOrder: index + 1, isPrimary: false, cloudinaryPublicId: image.publicId },
+      });
+    }
+  }
+
   // Demo order
   const order = await prisma.order.upsert({
     where: { orderNumber: "CDR-DEMO-001" },
